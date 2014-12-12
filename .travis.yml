@@ -1,0 +1,18 @@
+language: c
+compiler:
+  - gcc
+before_install:
+  - echo $LANG
+  - echo $LC_ALL
+  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get install -y cmake; fi
+script: cmake . && make
+notifications:
+  email:
+    recipients:
+      - vorobievds@gmail.com
+    on_success: change
+    on_failure: always
+env:
+  - LANG="en_US.UTF-8"
+os:
+  - linux
