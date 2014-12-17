@@ -44,6 +44,7 @@
 #include <sys/stat.h>
 #include <sys/file.h>
 #include "qinternal.h"
+#include "qfile_internal.h"
 #include "utilities/qstring.h"
 #include "utilities/qfile.h"
 
@@ -311,14 +312,14 @@ ssize_t qfile_save(const char *filepath, const void *buf, size_t size,
  */
 bool qfile_mkdir(const char *dirpath, mode_t mode, bool recursive) {
     DEBUG("try to create directory %s", dirpath);
-    if (mkdir(dirpath, mode) == 0)
+    if (qi_mkdir(dirpath, mode) == 0)
         return true;
 
     bool ret = false;
     if (recursive == true && errno == ENOENT) {
         char *parentpath = qfile_get_dir(dirpath);
         if (qfile_mkdir(parentpath, mode, true) == true
-                && mkdir(dirpath, mode) == 0) {
+                && qi_mkdir(dirpath, mode) == 0) {
             ret = true;
         }
         free(parentpath);
