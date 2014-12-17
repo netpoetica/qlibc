@@ -1,0 +1,20 @@
+
+#cmakedefine HAVE_SYS_STAT_H
+#cmakedefine HAVE_S_IRGRP
+#cmakedefine HAVE_S_IROTH
+
+#include <stdint.h>
+
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#ifndef HAVE_S_IRGRP
+#define S_IRGRP 0x0000
+#endif
+#ifndef HAVE_S_IROTH
+#define S_IROTH 0x0000
+#endif
+#endif
+
+#if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
+typedef uint32_t u_int32_t;
+#endif

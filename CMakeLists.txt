@@ -4,44 +4,64 @@ PROJECT(qlibc C)
 INCLUDE_DIRECTORIES(${qlibc_SOURCE_DIR}/include/qlibc)
 INCLUDE_DIRECTORIES(${qlibc_SOURCE_DIR}/src/internal)
 
+INCLUDE(CheckIncludeFiles)
+INCLUDE(CheckSymbolExists)
+CHECK_INCLUDE_FILES("sys/stat.h" HAVE_SYS_STAT_H)
+CHECK_SYMBOL_EXISTS(S_IRGRP "sys/stat.h" HAVE_S_IRGRP)
+CHECK_SYMBOL_EXISTS(S_IROTH "sys/stat.h" HAVE_S_IROTH)
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/config.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+
+
+IF(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -include ${CMAKE_CURRENT_BINARY_DIR}/config.h")
+ELSEIF(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /FI ${CMAKE_CURRENT_BINARY_DIR}/config.h")
+ELSEIF(CMAKE_C_COMPILER_ID STREQUAL "CLANG")
+    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -include ${CMAKE_CURRENT_BINARY_DIR}/config.h")
+ELSE()
+    MESSAGE(FATAL_ERROR "Your compiler (${CMAKE_C_COMPILER_ID}) isn't supported yet")
+ENDIF()
+
 SET(SRC_SUBPATHS
-		containers/*.c 
-		utilities/*.c 
-		ipc/*.c 
-		internal/*.c)
+        containers/*.c
+        utilities/*.c
+        ipc/*.c
+        internal/*.c)
 
 SET(SRC_SUBPATHS_EXT
-		extensions/*.c)
+        extensions/*.c)
 
 SET(SRC_PATHS src)
 
 IF(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-	SET(SRC_PATHS ${SRC_PATHS} src/os/linux src/os/nix)
+    SET(SRC_PATHS ${SRC_PATHS} src/os/linux src/os/nix)
 ELSEIF(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-	SET(SRC_PATHS ${SRC_PATHS} src/os/windows)
+    SET(SRC_PATHS ${SRC_PATHS} src/os/windows)
 ELSEIF(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-	SET(SRC_PATHS ${SRC_PATHS} src/os/nix)
+    SET(SRC_PATHS ${SRC_PATHS} src/os/nix)
 ENDIF()
 
+#Add os-related source paths for qlibc
 FOREACH(TMP_path IN LISTS SRC_PATHS)
-	FOREACH(TMP_subpath IN LISTS SRC_SUBPATHS)
-		SET(TMP_search_path "${TMP_path}/${TMP_subpath}")
-		SET(SRC_SEARCH_PATHS ${SRC_SEARCH_PATHS} ${TMP_search_path})
-	ENDFOREACH(TMP_subpath)
+    FOREACH(TMP_subpath IN LISTS SRC_SUBPATHS)
+        SET(TMP_search_path "${TMP_path}/${TMP_subpath}")
+        SET(SRC_SEARCH_PATHS ${SRC_SEARCH_PATHS} ${TMP_search_path})
+    ENDFOREACH(TMP_subpath)
 ENDFOREACH(TMP_path)
 
+#Add os-related source paths files for qlibcext
 FOREACH(TMP_path IN LISTS SRC_PATHS)
-	FOREACH(TMP_subpath IN LISTS SRC_SUBPATHS_EXT)
-		SET(TMP_search_path "${TMP_path}/${TMP_subpath}")
-		SET(SRC_SEARCH_PATHS_EXT ${SRC_SEARCH_PATHS_EXT} ${TMP_search_path})
-	ENDFOREACH(TMP_subpath)
+    FOREACH(TMP_subpath IN LISTS SRC_SUBPATHS_EXT)
+        SET(TMP_search_path "${TMP_path}/${TMP_subpath}")
+        SET(SRC_SEARCH_PATHS_EXT ${SRC_SEARCH_PATHS_EXT} ${TMP_search_path})
+    ENDFOREACH(TMP_subpath)
 ENDFOREACH(TMP_path)
 
 FILE(GLOB_RECURSE SRC_LIB 
-		${SRC_SEARCH_PATHS})
+        ${SRC_SEARCH_PATHS})
 
 FILE(GLOB_RECURSE SRC_LIB_EXT 
-		${SRC_SEARCH_PATHS_EXT})
+        ${SRC_SEARCH_PATHS_EXT})
 
 SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${qlibc_SOURCE_DIR}/lib)
 SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${qlibc_SOURCE_DIR}/lib)
