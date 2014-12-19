@@ -27,7 +27,7 @@
  *****************************************************************************/
 
 /**
- * @file qfile_internal.c Internal windows-specific file API.
+ * @file qfile_internal.c Internal *nix-specific file API.
  */
 
 
