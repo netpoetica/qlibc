@@ -35,10 +35,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <unistd.h>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 #include "qinternal.h"
 #include "utilities/qfile.h"
 #include "utilities/qsystem.h"
