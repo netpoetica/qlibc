@@ -36,72 +36,11 @@
 #include <stdarg.h>
 #include <string.h>
 #include <unistd.h>
-#include <poll.h>
 #include <errno.h>
 #include "qinternal.h"
 #include "utilities/qio.h"
 
 #define MAX_IOSEND_SIZE     (32 * 1024)
-
-/**
- * Test & wait until the file descriptor has readable data.
- *
- * @param fd        file descriptor
- * @param timeoutms wait timeout milliseconds. 0 for no wait,
- *                  -1 for infinite wait
- *
- * @return 1 if readable, 0 on timeout, -1 if an error occurred.
- *
- * @note
- *  The argument timeoutms can be used to set maximum wait time for a socket
- *  descriptor.
- */
-int qio_wait_readable(int fd, int timeoutms) {
-    struct pollfd fds[1];
-
-    fds[0].fd = fd;
-    fds[0].events = POLLIN;
-
-    int pollret = poll(fds, 1, timeoutms);
-    if (pollret == 0) {
-        errno = ETIMEDOUT;
-        return 0;
-    } else if (pollret < 0) {
-        return -1;
-    }
-
-    if (fds[0].revents & POLLIN)
-        return 1;
-    return -1;
-}
-
-/**
- * Test & wait until the file descriptor is ready for writing.
- *
- * @param fd        file descriptor
- * @param timeoutms wait timeout milliseconds. 0 for no wait,
- *                  -1 for infinite wait
- *
- * @return 1 if writable, 0 on timeout, -1 if an error occurred.
- */
-int qio_wait_writable(int fd, int timeoutms) {
-    struct pollfd fds[1];
-
-    fds[0].fd = fd;
-    fds[0].events = POLLOUT;
-
-    int pollret = poll(fds, 1, timeoutms);
-    if (pollret == 0) {
-        errno = ETIMEDOUT;
-        return 0;
-    } else if (pollret < 0) {
-        return -1;
-    }
-
-    if (fds[0].revents & POLLOUT)
-        return 1;
-    return -1;
-}
 
 /**
  * Read from a file descriptor.
