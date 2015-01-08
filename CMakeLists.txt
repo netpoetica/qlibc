@@ -3,14 +3,9 @@ PROJECT(qlibc C)
 
 INCLUDE_DIRECTORIES(${qlibc_SOURCE_DIR}/include/qlibc)
 INCLUDE_DIRECTORIES(${qlibc_SOURCE_DIR}/src/internal)
+INCLUDE_DIRECTORIES(${qlibc_SOURCE_DIR}/src/internal/compat)
 
-INCLUDE(CheckIncludeFiles)
-INCLUDE(CheckSymbolExists)
-CHECK_INCLUDE_FILES("sys/stat.h" HAVE_SYS_STAT_H)
-CHECK_SYMBOL_EXISTS(S_IRGRP "sys/stat.h" HAVE_S_IRGRP)
-CHECK_SYMBOL_EXISTS(S_IROTH "sys/stat.h" HAVE_S_IROTH)
-CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/config.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
-
+INCLUDE("config.cmake")
 
 IF(CMAKE_C_COMPILER_ID STREQUAL "GNU")
     SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -include ${CMAKE_CURRENT_BINARY_DIR}/config.h")
@@ -31,12 +26,17 @@ SET(SRC_SUBPATHS
 SET(SRC_SUBPATHS_EXT
         extensions/*.c)
 
-SET(SRC_PATHS src)
+SET(SRC_PATHS src src/os/compat)
+SET(QLIBC_LINK_LIBS )
+SET(QLIBC_EXT_LINK_LIBS qlibc)
 
 IF(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     SET(SRC_PATHS ${SRC_PATHS} src/os/linux src/os/nix)
 ELSEIF(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     SET(SRC_PATHS ${SRC_PATHS} src/os/windows)
+	
+	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DDISABLE_IPC -DDISABLE_QHTTPCLIENT -DDISABLE_QLOG")
+	LIST(APPEND QLIBC_LINK_LIBS "ws2_32")
 ELSEIF(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     SET(SRC_PATHS ${SRC_PATHS} src/os/nix)
 ENDIF()
@@ -44,16 +44,14 @@ ENDIF()
 #Add os-related source paths for qlibc
 FOREACH(TMP_path IN LISTS SRC_PATHS)
     FOREACH(TMP_subpath IN LISTS SRC_SUBPATHS)
-        SET(TMP_search_path "${TMP_path}/${TMP_subpath}")
-        SET(SRC_SEARCH_PATHS ${SRC_SEARCH_PATHS} ${TMP_search_path})
+		LIST(APPEND SRC_SEARCH_PATHS "${TMP_path}/${TMP_subpath}")
     ENDFOREACH(TMP_subpath)
 ENDFOREACH(TMP_path)
 
 #Add os-related source paths files for qlibcext
 FOREACH(TMP_path IN LISTS SRC_PATHS)
     FOREACH(TMP_subpath IN LISTS SRC_SUBPATHS_EXT)
-        SET(TMP_search_path "${TMP_path}/${TMP_subpath}")
-        SET(SRC_SEARCH_PATHS_EXT ${SRC_SEARCH_PATHS_EXT} ${TMP_search_path})
+		LIST(APPEND SRC_SEARCH_PATHS_EXT "${TMP_path}/${TMP_subpath}")
     ENDFOREACH(TMP_subpath)
 ENDFOREACH(TMP_path)
 
@@ -71,4 +69,6 @@ ADD_LIBRARY(qlibc SHARED ${SRC_LIB})
 
 ADD_LIBRARY(qlibcext-static STATIC ${SRC_LIB_EXT})
 ADD_LIBRARY(qlibcext SHARED ${SRC_LIB_EXT})
-TARGET_LINK_LIBRARIES(qlibcext qlibc)
+
+TARGET_LINK_LIBRARIES(qlibc ${QLIBC_LINK_LIBS})
+TARGET_LINK_LIBRARIES(qlibcext ${QLIBC_EXT_LINK_LIBS})
