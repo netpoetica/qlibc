@@ -36,5 +36,5 @@
 inline long qi_get_time_seed() {
     FILETIME ft;
     GetSystemTimeAsFileTime(&ft);
-    return ft.dwLowDateTime % 1000000
+    return ft.dwLowDateTime % 1000000;
 }
