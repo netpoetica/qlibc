@@ -35,6 +35,8 @@
 #ifndef _QSOCKET_H
 #define _QSOCKET_H
 
+#ifndef _WIN32
+
 #include <stdlib.h>
 #include <stdbool.h>
 #include <netinet/in.h>
@@ -51,6 +53,8 @@ extern char *qsocket_get_localaddr(char *buf, size_t bufsize);
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif
 
 #endif /*_QSOCKET_H */
