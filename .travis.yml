@@ -4,7 +4,7 @@ compiler:
 before_install:
   - echo $LANG
   - echo $LC_ALL
-  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update && sudo apt-get -o Dpkg::Options::='--force-confold' --force-yes -fuy upgrade && sudo apt-get install -y cmake; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update && sudo apt-get install -y cmake; fi
 script: cmake . && make
 notifications:
   email:
