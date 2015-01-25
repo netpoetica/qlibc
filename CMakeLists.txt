@@ -3,6 +3,12 @@ PROJECT(qlibc C)
 
 SET(qlibc_VERSION "2.1.6.5")
 
+# Tell CMake we will use CTest
+ENABLE_TESTING()
+
+# Tell CMake there is a CMakeLists.txt in the tests/ directory
+ADD_SUBDIRECTORY(tests)
+
 FILE(GLOB QLIBC_INCLUDE_FILES include/qlibc/*.h)
 FILE(GLOB QLIBC_INCLUDE_CONTAINERS_FILES include/qlibc/containers/*.h)
 FILE(GLOB QLIBC_INCLUDE_EXTENSIONS_FILES include/qlibc/extensionss/*.h)
@@ -33,8 +39,8 @@ SET(SRC_SUBPATHS_EXT
         extensions/*.c)
 
 SET(SRC_PATHS src src/os/compat)
-SET(QLIBC_LINK_LIBS )
-SET(QLIBC_EXT_LINK_LIBS qlibc)
+SET(QLIBC_LINK_LIBS pthread)
+SET(QLIBC_EXT_LINK_LIBS qlibc pthread)
 
 IF(HAVE_PTHREADS)
     LIST(APPEND QLIBC_LINK_LIBS pthread)
@@ -116,3 +122,4 @@ INSTALL(FILES
 
 EXPORT(TARGETS qlibc qlibc-static qlibcext qlibcext-static FILE ${CMAKE_BINARY_DIR}/qlibc-config.cmake)
 EXPORT(PACKAGE qlibc)
+
