@@ -5,6 +5,7 @@ Installing qLibc
 The newer build system uses CMake, and can be built like so, assuming you have cloned the source into a folder `qlibc`, you can run the following command:
 ```
 git clone git@github.com:wolkykim/qlibc.git
+cd qlibc
 cmake . && make && make test
 ```
 This will create static and shared libraries in your source/lib folder as well as generate them in the build directory:
