@@ -4,8 +4,12 @@ compiler:
 before_install:
   - echo $LANG
   - echo $LC_ALL
-  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update && sudo apt-get install -y cmake && cmake --version; fi
-script: cmake . && make
+  - if [ $TRAVIS_OS_NAME == linux ]; then echo "yes" | sudo add-apt-repository ppa:kalakris/cmake; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update && sudo apt-get install -y cmake; fi
+  - cmake --version
+script: 
+  - cmake . 
+  - make
 notifications:
   email:
     recipients:
