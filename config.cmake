@@ -1,6 +1,7 @@
 INCLUDE(CheckIncludeFiles)
 INCLUDE(CheckSymbolExists)
 INCLUDE(CheckFunctionExists)
+INCLUDE(CheckTypeSize)
 INCLUDE("CMakePushCheckStateEx.cmake")
 
 
