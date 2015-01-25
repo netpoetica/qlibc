@@ -39,8 +39,8 @@ SET(SRC_SUBPATHS_EXT
         extensions/*.c)
 
 SET(SRC_PATHS src src/os/compat)
-SET(QLIBC_LINK_LIBS )
-SET(QLIBC_EXT_LINK_LIBS qlibc)
+SET(QLIBC_LINK_LIBS pthread)
+SET(QLIBC_EXT_LINK_LIBS qlibc pthread)
 
 IF(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     SET(SRC_PATHS ${SRC_PATHS} src/os/linux src/os/nix)
