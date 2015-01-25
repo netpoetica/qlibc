@@ -6,6 +6,7 @@
 #cmakedefine HAVE_STRERROR_S
 #cmakedefine HAVE_STRPTIME
 #cmakedefine HAVE_TIMEGM
+#cmakedefine HAVE_PTHREADS
 
 #include <stdint.h>
 
